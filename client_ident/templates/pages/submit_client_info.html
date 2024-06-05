@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Client Info</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Submit - Client Info</h1>
+    <form method="post" id="clientInfoForm">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        // Récupérer les coordonnées géographiques avec JavaScript
+        $(document).ready(function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                $('#id_latitude').val(latitude);
+                $('#id_longitude').val(longitude);
+                console.log('Latitude: ' + latitude + ', Longitude: ' + longitude);
+            }, function(error) {
+                console.error('Error occurred. Error code: ' + error.code);
+            });
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    });
+    </script>
+</body>
+</html>

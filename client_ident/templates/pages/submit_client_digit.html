@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Client Info</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Submit Client Info</h1>
+    <form method="post" id="clientInfoForm">
+        {% csrf_token %}
+        {{ form }}
+        <input type="hidden" name="fingerprint" id="id_fingerprint">
+        <button type="button" id="captureFingerprint">Capture Fingerprint</button>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    $('#id_latitude').val(latitude);
+                    $('#id_longitude').val(longitude);
+                });
+            }
+
+            $('#captureFingerprint').click(async function() {
+                // Code pour capturer l'empreinte digitale
+                try {
+                    const publicKey = {
+                        challenge: new Uint8Array(32),
+                        rp: {
+                            name: "Example Corp"
+                        },
+                        user: {
+                            id: new Uint8Array(16),
+                            name: "johndoe@example.com",
+                            displayName: "John Doe"
+                        },
+                        pubKeyCredParams: [{
+                            type: "public-key",
+                            alg: -7
+                        }]
+                    };
+                    
+                    const credential = await navigator.credentials.create({ publicKey });
+                    
+                    if (credential) {
+                        const fingerprintData = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                        $('#id_fingerprint').val(fingerprintData);
+                        alert("Fingerprint captured successfully!");
+                    }
+                } catch (error) {
+                    console.error('Error capturing fingerprint:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
